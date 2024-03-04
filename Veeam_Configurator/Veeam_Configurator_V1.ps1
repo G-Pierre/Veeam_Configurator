@@ -1,5 +1,5 @@
 #   Auteur : Pierre GILLET 
-#   Date dernière mise à jour : 28/02/2024
+#   Date dernière mise à jour : 04/03/2024
 
 # Historique des versions
 #   v 1.0 -> Redaction initiale
@@ -12,8 +12,8 @@
 ############################### Desactivation des services ###############################
 
 ### -> Remote Desktop Services (TermService) should be disabled
-Stop-Service -Name "TermService" -Force
-Set-Service -Name "TermService" -Status stopped -StartupType disabled
+Stop-Service -Name TermService -Force
+Set-Service -Name TermService -StartupType Disabled
 
 # Verification
 $service_1 = Get-Service -Name "TermService"
@@ -80,30 +80,37 @@ $batFilePath5 = "Regedit_Modifs\Policy_Group_SMBV3.bat"
 $batFilePath6 = "Regedit_Modifs\Disable_WDigest.bat"
 $batFilePath7 = "Regedit_Modifs\Set_WinHttpAutoProxy.bat"
 
-Write-Host "Execution du fichier DisableSSL2-3.bat..."
+Write-Host " ################################  Execution du fichier $batFilePath...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath"
 
-Write-Host "Execution du fichier DisableTLS1.bat..."
+Write-Host " ################################  Execution du fichier $batFilePath2...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath2"
 
-Write-Host "Execution du fichier WindowsScriptHost.bat..."
+Write-Host " ################################  Execution du fichier $batFilePath3...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath3"
 
-Write-Host "Execution du fichier EnableMulticast.bat..."
+Write-Host " ################################  Execution du fichier $batFilePath4...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath4"
 
-Write-Host "Execution du fichier Policy_Group_SMBV3.bat..."
+Write-Host "################################  Execution du fichier $batFilePath5...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath5"
 
-Write-Host "Execution du fichier Disable_WDigest.bat..."
+Write-Host "################################  Execution du fichier $batFilePath6...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath6"
 
-Write-Host "Execution du fichier Set_WinHttpAutoProxy.bat..."
+Write-Host " ################################  Execution du fichier $batFilePath7...   ################################ " -ForegroundColor Yellow
 cmd.exe /c "$batFilePath7"
 
+############################### Modifications via CLI VEEAM ###############################
+
+### -> Unknown Linux servers should not be trusted automatically
+
+Set-VBRLinuxTrustedHostPolicy -Type KnownHosts
+Write-Host "Unknown Linux servers should not be trusted automatically -> Active" -ForegroundColor Yellow
 
 ############################### Desactivation SMB V1 ###############################
 
+Write-Host "Desactivation du SMBV1" -ForegroundColor Yellow
 Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
 
 ############################### Activation SMB V3 ###############################
@@ -120,4 +127,4 @@ if ($smbConfig.EncryptData) {
     Write-Host "Erreur : Le chiffrement des donnees SMB n'a pas ete active." -ForegroundColor Red
 }
 
-Write-Host "Merci de redemarrer le serveur puis relancer l'analyse VEEAM"
+Write-Host "Merci de redemarrer le serveur puis relancer l'analyse VEEAM" -ForegroundColor Green
